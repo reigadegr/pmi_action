@@ -1,4 +1,4 @@
-name: Release Build
+name: Release Build web
 
 on:
   workflow_dispatch:
@@ -81,8 +81,8 @@ jobs:
       - name: "⚙️ Configure Git"
         shell: bash
         run: |
-          git config --global user.name "Numbersf"
-          git config --global user.email "263623064@qq.com"
+          git config --global user.name "reigadegrAction"
+          git config --global user.email "1145141919810@qq.com"
 
       - name: "🔧 Setup TimeZone"
         if: runner.os == 'Linux'
@@ -121,18 +121,16 @@ jobs:
           pnpm i
           pnpm build
 
-      - name: "⚙️ Reset flags"
+      - name: "📥 clone web template"
         shell: bash
         run: |
-          cd common/src-tauri
-          rm -rf .cargo/ || echo "无需删除目录"
-          mkdir -p .cargo/
-          curl -L https://github.com/reigadegr/pmi_action/raw/main/.cargo/config.toml -o .cargo/config.toml
+          git clone --depth 1 https://github.com/reigadegr/static_salvo
+          mv common/dist static_salvo/static
 
       - name: "🔨 Build common"
         shell: bash
         run: |
-          cd common
+          cd static_salvo
           toolchain="${{ github.event.inputs.TOOLCHAINS }}"
           platform="${{ contains(github.event.inputs.TARGET, 'windows') && 'windows' || (contains(github.event.inputs.TARGET, 'apple') && 'apple' || 'linux') }}"
           file="build_"$toolchain"_"$platform".sh"
@@ -142,7 +140,7 @@ jobs:
           curl -L $url -o "$file"
           cat "$file"; ls -al
 
-          bin_name="app"
+          bin_name="static_salvo"
           sh "$file" "${{ matrix.target }}" "$bin_name" || true
 
           is_windows="${{ contains(github.event.inputs.TARGET, 'windows') && 'true' || 'false' }}"
@@ -158,6 +156,6 @@ jobs:
       - name: "📤 Upload to GitHub artifacts"
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.event.inputs.TARGET }}_pmi_user_front
+          name: ${{ github.event.inputs.TARGET }}_pmi_user_front_web
           path: ${{ matrix.target }}_module/*
           retention-days: 3
