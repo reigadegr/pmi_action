@@ -148,7 +148,7 @@ jobs:
           file="$(find . -name "$bin_name")"
           echo "$(realpath $file)"
           mkdir -p ../${{ github.event.inputs.TARGET }}_module || echo "已有默认目录"
-          dd if=./src-tauri/target/"${{ matrix.target }}"/release/$bin_name of=../"${{ matrix.target }}"_module/$bin_name
+          dd if=./target/"${{ matrix.target }}"/release/$bin_name of=../"${{ matrix.target }}"_module/$bin_name
           git log > ../"${{ matrix.target }}"_module/commits.txt
 
       - name: "📤 Upload to GitHub artifacts"
