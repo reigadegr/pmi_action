@@ -53,8 +53,8 @@ jobs:
           echo "-----------------------"
 
   # Build binaries
-  build-clash_verge:
-    name: Build clash_verge
+  build-common:
+    name: Build common
     needs: [build-check]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 180
@@ -90,14 +90,15 @@ jobs:
           sudo -E rm -rf /etc/localtime
           sudo -E ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
-      - name: "📥 Download clash_verge github project code"
+      - name: "📥 Download github project code"
         run: |
-          git clone --depth 1 https://github.com/clash-verge-rev/clash-verge-rev clash_verge
+          export MY_PAT="${{ secrets.MY_PAT }}"
+          git clone --depth 1 https://reigadegr:${MY_PAT}@github.com/myProtectP/pmi-star-talent-portal common
 
       - name: "🔧 Replace mallocator"
         shell: bash
         run: |
-          cd clash_verge/src-tauri
+          cd common/src-tauri
           rm -rf rust-toolchain.toml || true
           cargo add mimalloc --features override,no_thp,v3 || true
           cd  ..
@@ -114,7 +115,7 @@ jobs:
           FORCE_COLOR: 1
           PNPM_COLOR: always
         run: |
-          cd clash_verge
+          cd common
           npm install -g pnpm
           pnpm i
           pnpm run prebuild ${{ matrix.target }}
@@ -122,25 +123,25 @@ jobs:
       - name: "⚙️ Reset flags"
         shell: bash
         run: |
-          cd clash_verge/src-tauri
+          cd common/src-tauri
           rm -rf .cargo/ || echo "无需删除目录"
           mkdir -p .cargo/
-          curl -L https://github.com/reigadegr/clash_verge_action/raw/main/.cargo/config.toml -o .cargo/config.toml
+          curl -L https://github.com/reigadegr/pmi_action/raw/main/.cargo/config.toml -o .cargo/config.toml
 
-      - name: "🔨 Build clash_verge"
+      - name: "🔨 Build common"
         shell: bash
         run: |
-          cd clash_verge
+          cd common
           toolchain="${{ github.event.inputs.TOOLCHAINS }}"
           platform="${{ contains(github.event.inputs.TARGET, 'windows') && 'windows' || (contains(github.event.inputs.TARGET, 'apple') && 'apple' || 'linux') }}"
           file="build_"$toolchain"_"$platform".sh"
 
-          url="https://github.com/reigadegr/clash_verge_action/raw/main/script/$file"
+          url="https://github.com/reigadegr/pmi_action/raw/main/script/$file"
           echo "脚本直链: $url"
           curl -L $url -o "$file"
           cat "$file"; ls -al
 
-          bin_name="clash-verge"
+          bin_name="app"
           sh "$file" "${{ matrix.target }}" "$bin_name" || true
 
           is_windows="${{ contains(github.event.inputs.TARGET, 'windows') && 'true' || 'false' }}"
@@ -156,6 +157,6 @@ jobs:
       - name: "📤 Upload to GitHub artifacts"
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.event.inputs.TARGET }}_clash_verge
+          name: ${{ github.event.inputs.TARGET }}_pmi_user_front
           path: ${{ matrix.target }}_module/*
           retention-days: 3
