@@ -119,7 +119,7 @@ jobs:
           cd common
           npm install -g pnpm
           pnpm i
-          pnpm run prebuild ${{ matrix.target }}
+          pnpm build
 
       - name: "⚙️ Reset flags"
         shell: bash
