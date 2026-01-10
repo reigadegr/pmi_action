@@ -91,6 +91,7 @@ jobs:
           sudo -E ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
       - name: "📥 Download github project code"
+        shell: bash
         run: |
           export MY_PAT="${{ secrets.MY_PAT }}"
           git clone --depth 1 https://reigadegr:${MY_PAT}@github.com/myProtectP/pmi-star-talent-portal common
