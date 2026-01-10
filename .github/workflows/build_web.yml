@@ -96,16 +96,6 @@ jobs:
           export MY_PAT="${{ secrets.MY_PAT }}"
           git clone --depth 1 https://reigadegr:${MY_PAT}@github.com/myProtectP/pmi-star-talent-portal common
 
-      - name: "🔧 Replace mallocator"
-        shell: bash
-        run: |
-          cd common/src-tauri
-          rm -rf rust-toolchain.toml || true
-          cargo add mimalloc --features override,no_thp,v3 || true
-          cd  ..
-          curl -L https://github.com/reigadegr/clash_verge_action/raw/main/patchs/use_mimalloc.patch -o "use_mimalloc.patch"
-          patch -p1 -F 3 < use_mimalloc.patch && git add . && git commit -m "use_mimalloc"
-
       - name: Install Node
         uses: actions/setup-node@v4
         with:
@@ -126,6 +116,14 @@ jobs:
         run: |
           git clone --depth 1 https://github.com/reigadegr/static_salvo
           mv common/dist static_salvo/static
+
+      - name: "⚙️ Reset flags"
+        shell: bash
+        run: |
+          cd static_salvo
+          rm -rf .cargo/ || echo "无需删除目录"
+          mkdir -p .cargo/
+          curl -L https://github.com/reigadegr/pmi_action/raw/main/.cargo/config.toml -o .cargo/config.toml
 
       - name: "🔨 Build common"
         shell: bash
