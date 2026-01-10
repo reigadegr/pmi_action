@@ -9,8 +9,8 @@ on:
         required: true
         default: 'Release Build'
         options:
-          - Release Build
-          - Debug Build
+          - Release Build tauri
+          - Release Build web
       count:
         description: '最多访问的运行次数'
         required: false
