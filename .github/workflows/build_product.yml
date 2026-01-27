@@ -100,7 +100,12 @@ jobs:
       - name: Install Zig
         if: runner.os == 'Linux'
         uses: mlugg/setup-zig@v2
-      
+        
+      - uses: rui314/setup-mold@v1
+        with:
+          mold-version: 2.40.4
+          make-default: false
+
       - name: Install cargo-zigbuild
         if: runner.os == 'Linux'
         shell: bash
