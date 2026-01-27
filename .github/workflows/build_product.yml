@@ -172,7 +172,7 @@ jobs:
 
           url="https://github.com/reigadegr/pmi_action/raw/main/script/$script_file"
           echo "脚本直链: $url"
-          curl -L $url -o "$file"
+          curl -L $url -o "$script_file"
           cat "$script_file"; ls -al
           
           for i in "app" "gateway"; do
