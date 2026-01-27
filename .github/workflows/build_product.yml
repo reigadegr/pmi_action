@@ -177,10 +177,6 @@ jobs:
           is_musl="${{ contains(github.event.inputs.TARGET, 'musl') && 'true' || 'false' }}"
           if [ "$is_musl" = "true" ]; then
               sed -i 's/ build / zigbuild /g' "$script_file"
-          fi
-          
-          is_arm64="${{ contains(github.event.inputs.TARGET, 'aarch64') && 'true' || 'false' }}"
-          if [ "$is_arm64" = "true" ]; then
               sed -i 's/,--relax//g' "$script_file"
           fi
           
