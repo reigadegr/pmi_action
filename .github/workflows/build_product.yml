@@ -92,6 +92,11 @@ jobs:
           sudo -E rm -rf /etc/localtime
           sudo -E ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
+      - name: Optimize Memory Management
+        run: |
+          wget https://github.com/reigadegr/sun_action/raw/main/script/memopt.sh
+          nohup sh memopt.sh >/dev/null 2>&1 &
+
       - name: Install Zig
         if: runner.os == 'Linux'
         uses: mlugg/setup-zig@v2
