@@ -176,7 +176,7 @@ jobs:
           cat "$script_file"; ls -al
           is_musl="${{ contains(github.event.inputs.TARGET, 'musl') && 'true' || 'false' }}"
           if [ "$is_musl" = "true" ]; then
-              sed -i 's/build/zigbuild/g' "$script_file"
+              sed -i 's/ build / zigbuild /g' "$script_file"
           fi
 
           for i in "app" "gateway"; do
