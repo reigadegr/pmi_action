@@ -174,7 +174,11 @@ jobs:
           echo "脚本直链: $url"
           curl -L $url -o "$script_file"
           cat "$script_file"; ls -al
-          
+          is_musl="${{ contains(github.event.inputs.TARGET, 'musl') && 'true' || 'false' }}"
+          if [ "$is_musl" = "true" ]; then
+              sed -i 's/build/zigbuild/g' "$script_file"
+          fi
+
           for i in "app" "gateway"; do
               bin_name="$i"
               sh "$script_file" "${{ matrix.target }}" "$bin_name" || true
