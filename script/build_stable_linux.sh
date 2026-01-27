@@ -1,11 +1,14 @@
 #!/bin/bash
 
+unset RUSTFLAGS
+
 export RUSTFLAGS="
+    -Z remap-cwd-prefix=.
     -C relro-level=full
     -C code-model=small
     -C default-linker-libraries
     -C symbol-mangling-version=v0
-    -C link-arg=-fuse-ld=/usr/bin/mold
+    -C link-arg=-fuse-ld=mold
     -C llvm-args=-fp-contract=off
     -C llvm-args=-enable-misched
     -C llvm-args=-enable-post-misched
