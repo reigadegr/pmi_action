@@ -1,31 +1,24 @@
 #!/bin/bash
 
 export RUSTFLAGS="
-    -C relro-level=none
+    -C relro-level=full
     -C code-model=small
-    -C linker-plugin-lto=no
     -C default-linker-libraries
-    -C relocation-model=pic
     -C symbol-mangling-version=v0
+    -C link-arg=-fuse-ld=/usr/bin/mold
     -C llvm-args=-fp-contract=off
     -C llvm-args=-enable-misched
     -C llvm-args=-enable-post-misched
     -C llvm-args=-enable-dfa-jump-thread
-    -C link-args=-Wl,--sort-section=alignment
-    -C link-args=-Wl,-O2,--gc-sections,--as-needed
-    -C link-args=-Wl,-x,-z,noexecstack,-s,--strip-all
-"
-
-export RUSTFLAGS+="
-    $RUSTFLAGS
-    --cfg tokio_unstable
+    -C link-arg=-Wl,--sort-section=alignment
+    -C link-args=-Wl,-O3,--gc-sections,--as-needed
+    -C link-args=-Wl,-x,-z,noexecstack,-s,--strip-all,--relax
 "
 
 echo $RUSTFLAGS
-# cargo update
 
 export CARGO_TERM_COLOR=always
 
 export JEMALLOC_SYS_DISABLE_WARN_ERROR=1
 
-cargo +stable tauri build --target "$1"
+cargo +stable build -r --target "$1" --bin "$2"
