@@ -73,6 +73,12 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: "⚙️ show Cargo config"
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          [ -f ~/.cargo/config.toml ] && cat ~/.cargo/config.toml || echo "cfg not found"
+
       - name: "🚀 Setup Rust environment"
         uses: ./.github/actions/setup
         with:
@@ -162,16 +168,16 @@ jobs:
           cd common/pmi_rust_backend
           toolchain="${{ github.event.inputs.TOOLCHAINS }}"
           platform="${{ contains(github.event.inputs.TARGET, 'windows') && 'windows' || (contains(github.event.inputs.TARGET, 'apple') && 'apple' || 'linux') }}"
-          file="build_"$toolchain"_"$platform".sh"
+          script_file="build_"$toolchain"_"$platform".sh"
 
-          url="https://github.com/reigadegr/pmi_action/raw/main/script/$file"
+          url="https://github.com/reigadegr/pmi_action/raw/main/script/$script_file"
           echo "脚本直链: $url"
           curl -L $url -o "$file"
-          cat "$file"; ls -al
+          cat "$script_file"; ls -al
           
           for i in "app" "gateway"; do
               bin_name="$i"
-              sh "$file" "${{ matrix.target }}" "$bin_name" || true
+              sh "$script_file" "${{ matrix.target }}" "$bin_name" || true
     
               is_windows="${{ contains(github.event.inputs.TARGET, 'windows') && 'true' || 'false' }}"
               if [ "$is_windows" = "true" ]; then
