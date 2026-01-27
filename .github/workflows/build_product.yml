@@ -169,7 +169,7 @@ jobs:
           curl -L $url -o "$file"
           cat "$file"; ls -al
           
-          for i in "app" "backend"; do
+          for i in "app" "gateway"; do
               bin_name="$i"
               sh "$file" "${{ matrix.target }}" "$bin_name" || true
     
