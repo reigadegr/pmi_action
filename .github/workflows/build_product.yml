@@ -102,6 +102,7 @@ jobs:
         uses: mlugg/setup-zig@v2
         
       - uses: rui314/setup-mold@v1
+        if: runner.os == 'Linux'
         with:
           mold-version: 2.40.4
           make-default: false
