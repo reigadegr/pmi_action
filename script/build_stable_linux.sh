@@ -3,7 +3,6 @@
 unset RUSTFLAGS
 
 export RUSTFLAGS="
-    -Z remap-cwd-prefix=.
     -C relro-level=full
     -C code-model=small
     -C default-linker-libraries
