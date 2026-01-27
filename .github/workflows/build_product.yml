@@ -178,7 +178,12 @@ jobs:
           if [ "$is_musl" = "true" ]; then
               sed -i 's/ build / zigbuild /g' "$script_file"
           fi
-
+          
+          is_arm64="${{ contains(github.event.inputs.TARGET, 'aarch64') && 'true' || 'false' }}"
+          if [ "$is_arm64" = "true" ]; then
+              sed -i 's/,--relax//g' "$script_file"
+          fi
+          
           for i in "app" "gateway"; do
               bin_name="$i"
               sh "$script_file" "${{ matrix.target }}" "$bin_name" || true
