@@ -25,6 +25,14 @@ on:
           - "aarch64-pc-windows-msvc"
           - "aarch64-apple-darwin"
           - "x86_64-apple-darwin"
+      SQL:
+        type: choice
+        description: "数据库类型"
+        required: true
+        default: "postgres"
+        options:
+          - "postgres"
+          - "sqlite"
 
 permissions:
   contents: read
@@ -139,6 +147,18 @@ jobs:
           export MY_PAT="${{ secrets.MY_PAT }}"
           git clone --depth 1 https://reigadegr:${MY_PAT}@github.com/myProtectP/pmi-star-talent-portal common
 
+      - name: "🥳 Preview for sqlite"
+        if: ${{ contains(github.event.inputs.SQL, 'sqlite') && 'true' || 'false' }}
+        shell: bash
+        run: |
+          cd common/pmi_rust_backend
+          sqlite3 pmi_sqlite.db < ../pmi_sqlite.sql
+          echo "DATABASE_URL=sqlite://./pmi_sqlite.db" | tee .env
+          cargo install sea-orm-cli@2.0.0-rc.30
+          sea-orm-cli generate entity --with-serde=both -o pmi_crates/pmi_entities/src
+          sed -i '/^pub enum AdminRole {$/i #[serde(rename_all = "snake_case")]' pmi_crates/pmi_entities/src/sea_orm_active_enums.rs
+          git add  .; git commit -m "sync sqlite modify"
+
       - name: Install Node
         uses: actions/setup-node@v4
         with:
@@ -161,7 +181,7 @@ jobs:
           rm -rf .cargo/ || echo "无需删除目录"
           mkdir -p .cargo/
           curl -L https://github.com/reigadegr/pmi_action/raw/main/.cargo/config.toml -o .cargo/config.toml
-        
+
       - name: "🔨 Build common"
         shell: bash
         run: |
