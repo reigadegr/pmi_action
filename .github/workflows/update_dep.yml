@@ -123,6 +123,7 @@ jobs:
           
           cargo install cargo-edit
           cargo upgrade -i
+          mkdir -p ../../${{ github.event.inputs.TARGET }}_module || echo "已有默认目录"
           git diff > ../../"${{ matrix.target }}"_module/commits.txt
 
       - name: "📤 Upload to GitHub artifacts"
