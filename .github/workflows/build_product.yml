@@ -148,18 +148,20 @@ jobs:
           git clone --depth 1 https://reigadegr:${MY_PAT}@github.com/myProtectP/pmi-star-talent-portal common
 
       - name: "🥳 Preview for sqlite"
-        if: ${{ contains(github.event.inputs.SQL, 'sqlite') && 'true' || 'false' }}
         shell: bash
         run: |
           cd common/pmi_rust_backend
-          sqlite3 pmi_sqlite.db < ../pmi_sqlite.sql
-          echo "DATABASE_URL=sqlite://./pmi_sqlite.db" | tee .env
-          cargo install sea-orm-cli@2.0.0-rc.30
-          sea-orm-cli generate entity --with-serde=both -o pmi_crates/pmi_entities/src
-          # sed -i '/^pub enum AdminRole {$/i #[serde(rename_all = "snake_case")]' pmi_crates/pmi_entities/src/sea_orm_active_enums.rs
-          # 批量替换所有实体文件中的 Eq 派生
-          sed -i 's/, Eq//g' pmi_crates/pmi_entities/src/*.rs
-          git add  .; git commit -m "sync sqlite modify"
+          preview="${{ contains(github.event.inputs.SQL, 'sqlite') && 'true' || 'false' }}"
+          if [ "$preview" = "true" ]; then
+              sqlite3 pmi_sqlite.db < ../pmi_sqlite.sql
+              echo "DATABASE_URL=sqlite://./pmi_sqlite.db" | tee .env
+              cargo install sea-orm-cli@2.0.0-rc.30
+              sea-orm-cli generate entity --with-serde=both -o pmi_crates/pmi_entities/src
+              # sed -i '/^pub enum AdminRole {$/i #[serde(rename_all = "snake_case")]' pmi_crates/pmi_entities/src/sea_orm_active_enums.rs
+              # 批量替换所有实体文件中的 Eq 派生
+              sed -i 's/, Eq//g' pmi_crates/pmi_entities/src/*.rs
+              git add  .; git commit -m "sync sqlite modify"
+          fi
 
       - name: Install Node
         uses: actions/setup-node@v4
